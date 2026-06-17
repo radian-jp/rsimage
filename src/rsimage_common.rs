@@ -31,7 +31,7 @@ pub struct RSIDecodedImage {
 /// # 戻り値
 /// - 確保されたメモリのポインタ
 #[unsafe(no_mangle)]
-pub extern "stdcall" fn rsimage_alloc(size: usize) -> *mut u8 {
+pub extern "system" fn rsimage_alloc(size: usize) -> *mut u8 {
     if size == 0 {
         return std::ptr::null_mut();
     }
@@ -43,7 +43,7 @@ pub extern "stdcall" fn rsimage_alloc(size: usize) -> *mut u8 {
 /// # 引数
 /// - rsimageにより割り当てられたポインタ (`RsDecodedImage` の `image_data` など)
 #[unsafe(no_mangle)]
-pub extern "stdcall" fn rsimage_free(image_data: *mut u8) {
+pub extern "system" fn rsimage_free(image_data: *mut u8) {
     if image_data.is_null() {
         return;
     }

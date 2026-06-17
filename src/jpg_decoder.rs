@@ -14,11 +14,11 @@ use crate::rsimage_common::*;
 /// - `RSIDecodeResult::Ok` (0): 正常終了
 /// - その他の負の値: 各種エラー
 #[unsafe(no_mangle)]
-pub extern "stdcall" fn rsimage_jpg_decode_memory(
+pub extern "system" fn rsimage_jpg_decode_memory(
     jpeg_data: *const u8,
     jpeg_data_size: u32,
     format: RSIPixelFormat,
-    allocator: Option<extern "stdcall" fn(usize) -> *mut u8>,
+    allocator: Option<extern "system" fn(usize) -> *mut u8>,
     output: *mut RSIDecodedImage
 ) -> RSIDecodeResult {
     if jpeg_data.is_null() || jpeg_data_size == 0 || output.is_null() {

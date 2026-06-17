@@ -12,11 +12,11 @@ use crate::rsimage_common::*;
 /// - `RSIDecodeResult::Ok` (0): 正常終了
 /// - その他の負の値: 各種エラーを示す
 #[unsafe(no_mangle)]
-pub extern "stdcall" fn rsimage_png_decode_memory(
+pub extern "system" fn rsimage_png_decode_memory(
     png_data: *const u8,
     png_data_size: u32,
     format: RSIPixelFormat,
-    allocator: Option<extern "stdcall" fn(usize) -> *mut u8>,
+    allocator: Option<extern "system" fn(usize) -> *mut u8>,
     output: *mut RSIDecodedImage
 ) -> RSIDecodeResult {
     // 入力の妥当性チェック
