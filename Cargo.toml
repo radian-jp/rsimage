@@ -9,6 +9,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 turbojpeg = "1.4.0"
-png = "0.17.16"
-image = { version = "0.25.10", default-features = false, features = ["bmp", "dds", "png", "gif", "jpeg", "tiff", "webp"] }
+image = { version = "0.25.10", default-features = false, features = ["bmp", "dds", "png", "gif", "jpeg", "tiff", "webp", "rayon", "avif-native"] }
 libc = "0.2.186"
