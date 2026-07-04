@@ -1,7 +1,7 @@
 use std::ffi::c_void;
 
 #[repr(i32)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum RSIDecodeResult {
     Ok = 0,
     InvalidInput = -1,
@@ -48,14 +48,14 @@ pub struct RSIExternalBuffer {
 /// width, height, required_bytes: 必要なサイズ
 /// user_data: 他言語から渡される任意のデータ
 /// out_buffer: 返すバッファ情報
-/// 戻り値: true=成功, false=失敗
+/// 戻り値: 成功時は Ok, 割り当て失敗時は AllocationFailure
 pub type RSIAllocateExternalBufferFn = unsafe extern "system" fn(
     width: u32,
     height: u32,
     required_bytes: usize,
     user_data: *mut c_void,
     out_buffer: *mut RSIExternalBuffer,
-) -> bool;
+) -> RSIDecodeResult;
 
 /// リサイズフィルタ選択
 #[repr(i32)]

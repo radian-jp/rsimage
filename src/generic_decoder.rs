@@ -195,7 +195,7 @@ pub extern "system" fn rsimage_generic_decode_callback(
         image_object_handle: std::ptr::null_mut(),
     };
 
-    let ok = unsafe {
+    let allocate_result = unsafe {
         allocate_callback(
             width,
             height,
@@ -205,7 +205,7 @@ pub extern "system" fn rsimage_generic_decode_callback(
         )
     };
 
-    if !ok || external_buffer.data.is_null() || external_buffer.capacity < size {
+    if allocate_result!=RSIDecodeResult::Ok || external_buffer.data.is_null() || external_buffer.capacity < size {
         return RSIDecodeResult::AllocationFailure;
     }
 
@@ -297,7 +297,7 @@ pub extern "system" fn rsimage_generic_decode_resize_callback(
         image_object_handle: std::ptr::null_mut(),
     };
 
-    let ok = unsafe {
+    let allocate_result = unsafe {
         allocate_callback(
             width,
             height,
@@ -307,7 +307,7 @@ pub extern "system" fn rsimage_generic_decode_resize_callback(
         )
     };
 
-    if !ok || external_buffer.data.is_null() || external_buffer.capacity < size {
+    if allocate_result!=RSIDecodeResult::Ok || external_buffer.data.is_null() || external_buffer.capacity < size {
         return RSIDecodeResult::AllocationFailure;
     }
 
