@@ -2,10 +2,13 @@
 name = "rsimage"
 version = "0.1.0"
 edition = "2024"
+license = "Unlicense"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-turbojpeg = "1.3.3"
+turbojpeg = "1.4.0"
 png = "0.17.16"
+image = { version = "0.25.10", default-features = false, features = ["bmp", "dds", "png", "gif", "jpeg", "tiff", "webp"] }
+libc = "0.2.186"

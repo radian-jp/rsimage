@@ -1,0 +1,28 @@
+Third Party Licenses
+====================
+
+This page lists the licenses of the projects used in this product.
+
+All license text:
+=================
+
+{{#each licenses}}
+
+--------------------------------------------------------------------------------
+{{name}}
+--------------------------------------------------------------------------------
+
+Used by:
+{{#each used_by}}
+- {{crate.name}} {{crate.version}}
+  {{#if crate.repository}}
+  {{crate.repository}}
+  {{/if}}
+{{/each}}
+
+License text:
+-------------
+
+{{{text}}}
+
+{{/each}}

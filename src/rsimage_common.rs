@@ -1,3 +1,5 @@
+use std::ffi::c_void;
+
 #[repr(i32)]
 #[derive(Debug)]
 pub enum RSIDecodeResult {
@@ -20,7 +22,62 @@ pub struct RSIDecodedImage {
     pub width: u32,
     pub height: u32,
     pub size: usize,
+    
+    // Rust側で割り当てたポインタ(rsimage_free での解放が必要)
     pub image_data: *mut u8,
+
+    /// 他言語から渡された画像オブジェクトへのハンドル
+    pub image_object_handle: *mut std::ffi::c_void,
+}
+
+/// 外部バッファ情報（他言語から渡される）
+#[repr(C)]
+pub struct RSIExternalBuffer {
+    /// ピクセルバッファ先頭
+    pub data: *mut u8,
+
+    /// バッファサイズ
+    pub capacity: usize,
+
+    /// 画像オブジェクト自体へのハンドル
+    /// 例: GCHandle.ToIntPtr(handle) で得た IntPtr
+    pub image_object_handle: *mut c_void,
+}
+
+/// 他言語から渡されるバッファ確保コールバック
+/// width, height, required_bytes: 必要なサイズ
+/// user_data: 他言語から渡される任意のデータ
+/// out_buffer: 返すバッファ情報
+/// 戻り値: true=成功, false=失敗
+pub type RSIAllocateExternalBufferFn = unsafe extern "system" fn(
+    width: u32,
+    height: u32,
+    required_bytes: usize,
+    user_data: *mut c_void,
+    out_buffer: *mut RSIExternalBuffer,
+) -> bool;
+
+/// リサイズフィルタ選択
+#[repr(i32)]
+#[derive(Debug, PartialEq)]
+pub enum RSIResizeFilter {
+    Nearest = 0,      // 最近傍補間
+    Triangle = 1,     // 双一次補間 (バイリニア)
+    CatmullRom = 2,   // 双三次補間 (Catmull-Rom)
+    Gaussian = 3,     // ガウス補間
+    Lanczos3 = 4,     // ランツォス補間 (ウィンドウ 3)
+}
+
+#[cfg(not(target_os = "windows"))]
+unsafe extern "C" {
+    pub fn malloc(size: usize) -> *mut u8;
+    pub fn free(ptr: *mut u8);
+}
+
+#[cfg(target_os = "windows")]
+unsafe extern "system" {
+    pub fn malloc(size: usize) -> *mut u8;
+    pub fn free(ptr: *mut u8);
 }
 
 /// rsimage メモリアロケーション関数
@@ -35,7 +92,7 @@ pub extern "system" fn rsimage_alloc(size: usize) -> *mut u8 {
     if size == 0 {
         return std::ptr::null_mut();
     }
-    Box::leak(vec![0u8; size].into_boxed_slice()).as_mut_ptr()
+    unsafe { malloc(size) }
 }
 
 /// rsimage メモリ解放関数
@@ -47,8 +104,5 @@ pub extern "system" fn rsimage_free(image_data: *mut u8) {
     if image_data.is_null() {
         return;
     }
-
-    unsafe {
-        let _ = Vec::from_raw_parts(image_data, 0, 0); // メモリ解放
-    }
+    unsafe { free(image_data) };
 }
